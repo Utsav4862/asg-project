@@ -6,6 +6,8 @@ import { ProductType } from "./Products";
 type Price = {
   less_250?: boolean;
   great_250_less_500?: boolean;
+  great_500_less_750?: boolean;
+  great_750_less_1000?: boolean;
 };
 
 type Category = {
@@ -25,13 +27,13 @@ function Filter() {
   const [isPricesChecked, setIsPricesChecked] = useState<boolean[]>(
     new Array(4).fill(false)
   );
-  // const [isCategoryChecked, setIsCategoryChecked] = useState<Categories>({
-  //   men: false,
-  //   women: false,
-  // });
   const [isCategoryChecked, setIsCategoryChecked] = useState<boolean[]>(
     new Array(4).fill(false)
   );
+
+  const [filterCat, setFilterCat] = useState<ProductType[]>([]);
+  const [filterPrice, setFilterPrice] = useState<ProductType[]>([]);
+  const [isFound, setIsFound] = useState<boolean>(true);
 
   const [filterProds, setFilterProds] = useState<FilterValues>({
     categories: {
@@ -40,18 +42,36 @@ function Filter() {
       jewellery: false,
       electronics: false,
     },
-    // price: {
-    //   less_250: false,
-    //   great_250_less_500: false,
-    // },
+    price: {
+      less_250: false,
+      great_250_less_500: false,
+      great_500_less_750: false,
+      great_750_less_1000: false,
+    },
   });
 
+  const onPriceChange = (e: any, i: number) => {
+    let data = { ...isPricesChecked };
+    data[i] = !data[i];
+    setIsPricesChecked(data);
+
+    let data2 = filterProds;
+    let filter = {
+      categories: data2.categories,
+      price: {
+        less_250: data[0],
+        great_250_less_500: data[1],
+        great_500_less_750: data[2],
+        great_750_less_1000: data[3],
+      },
+    };
+    setFilterProds(filter);
+    filterByPrice(filter);
+  };
+
   const onCatChange = (e: any, i: number) => {
-    console.log(e.target.checked);
-    console.log(isCategoryChecked);
     let data = { ...isCategoryChecked };
     data[i] = !data[i];
-    console.log(data);
     setIsCategoryChecked(data);
 
     let data2 = filterProds;
@@ -64,21 +84,25 @@ function Filter() {
       },
       price: data2.price,
     };
+
     setFilterProds(filter);
-    filterData(filter);
+    filterByCat(filter);
   };
 
-  const filterData = (v: FilterValues) => {
-    console.log(productContext?.products);
-    let data: ProductType[] = [];
-    if (productContext?.products) {
-      data = [...productContext.products];
-    }
-    let filteredData = productContext?.products?.filter((prod: ProductType) => {
+  const filterByCat = (v: FilterValues) => {
+    let data;
+    if (filterPrice.length != 0) {
+      data = filterPrice;
+      // console.log(productContext?.filteredData);
+    } else data = productContext?.products;
+    console.log(data);
+
+    let filteredData = data?.filter((prod: ProductType) => {
       let men = false,
         women = false,
         jewelery = false,
         electronics = false;
+
       if (v.categories?.men && prod.category == "men's clothing") {
         console.log(prod.category);
         men = true;
@@ -88,10 +112,62 @@ function Filter() {
         jewelery = true;
       else if (v.categories?.electronics && prod.category == "electronics")
         electronics = true;
-      return men || women || jewelery || electronics;
-    });
-    console.log(filteredData);
 
+      return men || jewelery || women || electronics;
+    });
+    if (filteredData?.length == 0) {
+      productContext?.setIsFiltering(false);
+    } else productContext?.setIsFiltering(true);
+    console.log(filteredData);
+    setFilterCat(filteredData!);
+
+    productContext?.setFilteredData(filteredData!);
+  };
+
+  const filterByPrice = (v: FilterValues) => {
+    let data;
+    if (filterCat.length != 0) {
+      data = filterCat;
+      // console.log(productContext?.filteredData);
+    } else data = productContext?.products;
+    console.log(data);
+
+    let filteredData = data?.filter((prod: ProductType) => {
+      let less_250 = false,
+        great_250_less_500 = false,
+        great_500_less_750 = false,
+        great_750_less_1000 = false;
+      if (v.price?.less_250 && prod.price <= 250) {
+        less_250 = true;
+      } else if (
+        v.price?.great_250_less_500 &&
+        prod.price > 250 &&
+        prod.price <= 500
+      )
+        great_250_less_500 = true;
+      else if (
+        v.price?.great_500_less_750 &&
+        prod.price > 500 &&
+        prod.price <= 750
+      )
+        great_500_less_750 = true;
+      else if (
+        v.price?.great_750_less_1000 &&
+        prod.price > 750 &&
+        prod.price <= 1000
+      )
+        great_750_less_1000 = true;
+      return (
+        less_250 ||
+        great_250_less_500 ||
+        great_500_less_750 ||
+        great_750_less_1000
+      );
+    });
+    if (filteredData?.length == 0) {
+      productContext?.setIsFiltering(false);
+    } else productContext?.setIsFiltering(true);
+    setFilterPrice(filteredData!);
     productContext?.setFilteredData(filteredData!);
   };
 
@@ -104,18 +180,22 @@ function Filter() {
       <div>
         <h3 style={{ fontWeight: "bold", marginBottom: 5 }}>Price</h3>
 
-        <div>
-          <input type={"checkbox"} id={"0-250"} checked={isPricesChecked[0]} />
-          <label htmlFor="0-250"> Under 250 </label>
-        </div>
-        <div>
-          <input
-            type={"checkbox"}
-            id={"250-500"}
-            checked={isPricesChecked[1]}
-          />
-          <label htmlFor="250-500"> 250 to 500</label>
-        </div>
+        {["Under 250", "250 To 500", "500 To 750", "750 To 1000"].map(
+          (cat, i) => (
+            <div>
+              <input
+                type={"checkbox"}
+                id={cat}
+                checked={isPricesChecked[i]}
+                onChange={(e: any) => {
+                  // on(e, i);
+                  onPriceChange(e, i);
+                }}
+              />
+              <label htmlFor={cat}> {cat} </label>
+            </div>
+          )
+        )}
       </div>
 
       <div>
@@ -129,7 +209,7 @@ function Filter() {
               onChange={(e: any) => {
                 onCatChange(e, i);
               }}
-              onClick={(e) => onCatChange(e, 0)}
+              // onClick={(e) => onCatChange(e, 0)}
             />
             <label htmlFor={cat.id}> {cat.label} </label>
           </div>

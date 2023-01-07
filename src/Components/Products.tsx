@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { ProductContext, ProductState } from "../Context/ProductsProvider";
-
 export type ProductType = {
   id: string;
   title: string;
@@ -21,6 +20,7 @@ const Products = () => {
 
   const getProducts = async () => {
     const { data } = await axios.get("https://fakestoreapi.com/products");
+
     productContext?.setProducts(data);
     setData(data);
     return data;
@@ -43,9 +43,26 @@ const Products = () => {
   return (
     <div className="products-wrapper">
       <div className="products">
-        {data?.map((prod) => (
+        {/* {productContext?.isFiltering == false ? (
+          <h2>No data Found Of This Category and Price</h2>
+        ) : (
+          data?.map((prod) => (
+            <div key={prod.id} className="product">
+              <img src={prod.image} width={"100%"} height={"65%"} />
+              <p style={{ fontWeight: "bold" }}>
+                {prod.title.length > 25
+                  ? prod.title.slice(0, 24) + "..."
+                  : prod.title}
+              </p>
+              <h4 style={{ color:  "blue" }}>$ {prod.price}</h4>
+            </div>
+          ))
+        )} */}
+
+        {data?.map((prod, i) => (
           <div key={prod.id} className="product">
             <img src={prod.image} width={"100%"} height={"65%"} />
+
             <p style={{ fontWeight: "bold" }}>
               {prod.title.length > 25
                 ? prod.title.slice(0, 24) + "..."
