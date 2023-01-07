@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { ProductContext, ProductState } from "../Context/ProductsProvider";
 
 export type ProductType = {
@@ -15,22 +15,35 @@ export type ProductType = {
   };
 };
 
-function Products() {
+const Products = () => {
   const productContext = useContext(ProductContext);
+  const [data, setData] = useState<ProductType[] | null>();
 
   const getProducts = async () => {
     const { data } = await axios.get("https://fakestoreapi.com/products");
-
     productContext?.setProducts(data);
+    setData(data);
+    return data;
   };
 
   useEffect(() => {
     getProducts();
   }, []);
+  useEffect(() => {
+    // getProducts();
+
+    if (
+      productContext?.filteredData != null &&
+      productContext.filteredData != undefined &&
+      productContext.filteredData?.length != 0
+    )
+      setData(productContext.filteredData);
+    else setData(productContext?.products);
+  }, [productContext?.filteredData]);
   return (
     <div className="products-wrapper">
       <div className="products">
-        {productContext?.products?.map((prod) => (
+        {data?.map((prod) => (
           <div key={prod.id} className="product">
             <img src={prod.image} width={"100%"} height={"65%"} />
             <p style={{ fontWeight: "bold" }}>
@@ -44,6 +57,6 @@ function Products() {
       </div>
     </div>
   );
-}
+};
 
 export default Products;
