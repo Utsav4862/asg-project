@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useContext, useEffect, useState } from "react";
 import { ProductContext, ProductState } from "../Context/ProductsProvider";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 export type ProductType = {
   id: string;
   title: string;
@@ -12,6 +13,7 @@ export type ProductType = {
     rate: number;
     count: number;
   };
+  isLiked: boolean;
 };
 
 const Products = () => {
@@ -20,10 +22,23 @@ const Products = () => {
 
   const getProducts = async () => {
     const { data } = await axios.get("https://fakestoreapi.com/products");
-
+    for (let p of data) {
+      p.isLiked = false;
+    }
     productContext?.setProducts(data);
     setData(data);
     return data;
+  };
+
+  const likeUnlike = (value: string, prod: ProductType, i: number) => {
+    console.log(value);
+
+    let temp = [...data!];
+    if (value == "like") {
+      temp[i].isLiked = true;
+    } else temp[i].isLiked = false;
+
+    setData(temp);
   };
 
   useEffect(() => {
@@ -62,6 +77,30 @@ const Products = () => {
         {data?.map((prod, i) => (
           <div key={prod.id} className="product">
             <img src={prod.image} width={"100%"} height={"65%"} />
+            {prod.isLiked ? (
+              <AiFillHeart
+                size={25}
+                color="red"
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  cursor: "pointer",
+                }}
+                onClick={() => likeUnlike("unlike", prod, i)}
+              />
+            ) : (
+              <AiOutlineHeart
+                size={25}
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  right: 10,
+                  cursor: "pointer",
+                }}
+                onClick={() => likeUnlike("like", prod, i)}
+              />
+            )}
 
             <p style={{ fontWeight: "bold" }}>
               {prod.title.length > 25

@@ -4,8 +4,8 @@ import { Categories } from "../Data/Categories";
 import { ProductType } from "./Products";
 
 type Price = {
-  less_250?: boolean;
-  great_250_less_500?: boolean;
+  less_500?: boolean;
+
   great_500_less_750?: boolean;
   great_750_less_1000?: boolean;
 };
@@ -25,7 +25,7 @@ type FilterValues = {
 function Filter() {
   const productContext = useContext(ProductContext);
   const [isPricesChecked, setIsPricesChecked] = useState<boolean[]>(
-    new Array(4).fill(false)
+    new Array(3).fill(false)
   );
   const [isCategoryChecked, setIsCategoryChecked] = useState<boolean[]>(
     new Array(4).fill(false)
@@ -43,8 +43,7 @@ function Filter() {
       electronics: false,
     },
     price: {
-      less_250: false,
-      great_250_less_500: false,
+      less_500: false,
       great_500_less_750: false,
       great_750_less_1000: false,
     },
@@ -59,10 +58,10 @@ function Filter() {
     let filter = {
       categories: data2.categories,
       price: {
-        less_250: data[0],
-        great_250_less_500: data[1],
-        great_500_less_750: data[2],
-        great_750_less_1000: data[3],
+        less_500: data[0],
+
+        great_500_less_750: data[1],
+        great_750_less_1000: data[2],
       },
     };
     setFilterProds(filter);
@@ -133,19 +132,12 @@ function Filter() {
     console.log(data);
 
     let filteredData = data?.filter((prod: ProductType) => {
-      let less_250 = false,
-        great_250_less_500 = false,
+      let less_500 = false,
         great_500_less_750 = false,
         great_750_less_1000 = false;
-      if (v.price?.less_250 && prod.price <= 250) {
-        less_250 = true;
+      if (v.price?.less_500 && prod.price <= 500) {
+        less_500 = true;
       } else if (
-        v.price?.great_250_less_500 &&
-        prod.price > 250 &&
-        prod.price <= 500
-      )
-        great_250_less_500 = true;
-      else if (
         v.price?.great_500_less_750 &&
         prod.price > 500 &&
         prod.price <= 750
@@ -157,12 +149,7 @@ function Filter() {
         prod.price <= 1000
       )
         great_750_less_1000 = true;
-      return (
-        less_250 ||
-        great_250_less_500 ||
-        great_500_less_750 ||
-        great_750_less_1000
-      );
+      return less_500 || great_500_less_750 || great_750_less_1000;
     });
     if (filteredData?.length == 0) {
       productContext?.setIsFiltering(false);
@@ -180,22 +167,20 @@ function Filter() {
       <div>
         <h3 style={{ fontWeight: "bold", marginBottom: 5 }}>Price</h3>
 
-        {["Under 250", "250 To 500", "500 To 750", "750 To 1000"].map(
-          (cat, i) => (
-            <div>
-              <input
-                type={"checkbox"}
-                id={cat}
-                checked={isPricesChecked[i]}
-                onChange={(e: any) => {
-                  // on(e, i);
-                  onPriceChange(e, i);
-                }}
-              />
-              <label htmlFor={cat}> {cat} </label>
-            </div>
-          )
-        )}
+        {["Under 500", "500 To 750", "750 To 1000"].map((cat, i) => (
+          <div>
+            <input
+              type={"checkbox"}
+              id={cat}
+              checked={isPricesChecked[i]}
+              onChange={(e: any) => {
+                // on(e, i);
+                onPriceChange(e, i);
+              }}
+            />
+            <label htmlFor={cat}> {cat} </label>
+          </div>
+        ))}
       </div>
 
       <div>
