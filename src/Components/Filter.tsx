@@ -1,3 +1,4 @@
+import { Rating } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { ProductContext } from "../Context/ProductsProvider";
 import { Categories } from "../Data/Categories";
@@ -33,7 +34,6 @@ function Filter() {
 
   const [filterCat, setFilterCat] = useState<ProductType[]>([]);
   const [filterPrice, setFilterPrice] = useState<ProductType[]>([]);
-  const [isFound, setIsFound] = useState<boolean>(true);
 
   const [filterProds, setFilterProds] = useState<FilterValues>({
     categories: {
@@ -164,7 +164,7 @@ function Filter() {
   return (
     <div className="filter">
       <h1 style={{ fontWeight: "500", marginBottom: 10 }}>Filters</h1>
-      <div>
+      <div style={{ marginBottom: 15 }}>
         <h3 style={{ fontWeight: "bold", marginBottom: 5 }}>Price</h3>
 
         {["Under 500", "500 To 750", "750 To 1000"].map((cat, i) => (

@@ -14,16 +14,19 @@ export type ProductType = {
     count: number;
   };
   isLiked: boolean;
+  isHover: boolean;
 };
 
 const Products = () => {
   const productContext = useContext(ProductContext);
   const [data, setData] = useState<ProductType[] | null>();
+  // const [isHover, setIsHover] = useState<boolean[]>([false]);
 
   const getProducts = async () => {
     const { data } = await axios.get("https://fakestoreapi.com/products");
     for (let p of data) {
       p.isLiked = false;
+      p.isHover = false;
     }
     productContext?.setProducts(data);
     setData(data);
@@ -31,12 +34,19 @@ const Products = () => {
   };
 
   const likeUnlike = (value: string, prod: ProductType, i: number) => {
-    console.log(value);
-
     let temp = [...data!];
     if (value == "like") {
       temp[i].isLiked = true;
     } else temp[i].isLiked = false;
+
+    setData(temp);
+  };
+
+  const onProductHover = (value: string, i: number) => {
+    let temp = [...data!];
+    if (value == "hover") {
+      temp[i].isHover = true;
+    } else temp[i].isHover = false;
 
     setData(temp);
   };
@@ -75,7 +85,17 @@ const Products = () => {
         )} */}
 
         {data?.map((prod, i) => (
-          <div key={prod.id} className="product">
+          <div
+            key={prod.id}
+            className="product"
+            onMouseEnter={() => {
+              onProductHover("hover", i);
+            }}
+            onMouseLeave={() => {
+              // console.log(isHover[i]);
+              onProductHover("hover-out", i);
+            }}
+          >
             <img src={prod.image} width={"100%"} height={"65%"} />
             {prod.isLiked ? (
               <AiFillHeart
@@ -101,13 +121,32 @@ const Products = () => {
                 onClick={() => likeUnlike("like", prod, i)}
               />
             )}
-
-            <p style={{ fontWeight: "bold" }}>
-              {prod.title.length > 25
-                ? prod.title.slice(0, 24) + "..."
-                : prod.title}
-            </p>
-            <h4 style={{ color: "blue" }}>$ {prod.price}</h4>
+            {prod.isHover == true ? (
+              <div
+                style={{
+                  width: "100%",
+                  textAlign: "center",
+                  height: 30,
+                  backgroundColor: "blue",
+                  opacity: 0.5,
+                  position: "absolute",
+                  bottom: 100,
+                  right: 0,
+                }}
+              >
+                <h3 style={{ color: "#fff" }}>View Product</h3>
+              </div>
+            ) : (
+              ""
+            )}
+            <div style={{ marginTop: 10 }}>
+              <p style={{ fontWeight: "bold" }}>
+                {prod.title.length > 25
+                  ? prod.title.slice(0, 24) + "..."
+                  : prod.title}
+              </p>
+              <h4 style={{ color: "blue" }}>$ {prod.price}</h4>
+            </div>
           </div>
         ))}
       </div>
