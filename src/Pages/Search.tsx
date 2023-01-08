@@ -12,29 +12,8 @@ function Search() {
   const [isFocused, setIsFocused] = useState<Boolean>(false);
 
   const modelShow = () => {
-    console.log("focused");
     setIsFocused(true);
   };
-
-  // const ref = useRef<HTMLDivElement>(null);
-
-  // useEffect(() => {
-  //   const handleClickOutside = (event: any) => {
-  //     console.log(event.target);
-  //     console.log(ref?.current?.contains(event.target));
-
-  //     if (ref.current && !ref.current.contains(event.target)) {
-  //       setIsFocused(false);
-  //       console.log("sdfas");
-  //     } else {
-  //       setIsFocused(true);
-  //     }
-  //   };
-  //   document.addEventListener("click", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("click", handleClickOutside);
-  //   };
-  // }, [ref]);
 
   return (
     <div className="wrapper">

@@ -46,7 +46,7 @@ function SuggestionBox() {
       <h3 className="heading">Latest Trends</h3>
       <div className="products-trending">
         {trending?.map((prod) => (
-          <div className="product-trending">
+          <div className="product-trending" key={prod.id}>
             <img src={prod.image} width={"90%"} height={"70%"} />
             <div style={{ height: "29%" }}>
               <p style={{ textTransform: "capitalize" }}>
@@ -60,8 +60,10 @@ function SuggestionBox() {
       </div>
 
       <h3 className="heading">Popular Suggestions</h3>
-      {suggestions.map((sug) => (
-        <p style={{ paddingLeft: 10, paddingBottom: 5 }}>{sug}</p>
+      {suggestions.map((sug, i) => (
+        <p style={{ paddingLeft: 10, paddingBottom: 5 }} key={i}>
+          {sug}
+        </p>
       ))}
     </div>
   );

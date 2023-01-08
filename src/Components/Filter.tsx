@@ -1,4 +1,3 @@
-import { Rating } from "@mui/material";
 import { useContext, useEffect, useState } from "react";
 import { ProductContext } from "../Context/ProductsProvider";
 import { Categories } from "../Data/Categories";
@@ -92,9 +91,7 @@ function Filter() {
     let data;
     if (filterPrice.length != 0) {
       data = filterPrice;
-      // console.log(productContext?.filteredData);
     } else data = productContext?.products;
-    console.log(data);
 
     let filteredData = data?.filter((prod: ProductType) => {
       let men = false,
@@ -103,7 +100,6 @@ function Filter() {
         electronics = false;
 
       if (v.categories?.men && prod.category == "men's clothing") {
-        console.log(prod.category);
         men = true;
       } else if (v.categories?.women && prod.category == "women's clothing") {
         women = true;
@@ -117,7 +113,7 @@ function Filter() {
     if (filteredData?.length == 0) {
       productContext?.setIsFiltering(false);
     } else productContext?.setIsFiltering(true);
-    console.log(filteredData);
+
     setFilterCat(filteredData!);
 
     productContext?.setFilteredData(filteredData!);
@@ -127,9 +123,7 @@ function Filter() {
     let data;
     if (filterCat.length != 0) {
       data = filterCat;
-      // console.log(productContext?.filteredData);
     } else data = productContext?.products;
-    console.log(data);
 
     let filteredData = data?.filter((prod: ProductType) => {
       let less_500 = false,
@@ -168,7 +162,7 @@ function Filter() {
         <h3 style={{ fontWeight: "bold", marginBottom: 5 }}>Price</h3>
 
         {["Under 500", "500 To 750", "750 To 1000"].map((cat, i) => (
-          <div>
+          <div key={i}>
             <input
               type={"checkbox"}
               id={cat}
@@ -177,8 +171,12 @@ function Filter() {
                 // on(e, i);
                 onPriceChange(e, i);
               }}
+              style={{ cursor: "pointer" }}
             />
-            <label htmlFor={cat}> {cat} </label>
+            <label htmlFor={cat} style={{ cursor: "pointer" }}>
+              {" "}
+              {cat}{" "}
+            </label>
           </div>
         ))}
       </div>
@@ -186,7 +184,7 @@ function Filter() {
       <div>
         <h3 style={{ fontWeight: "bold", marginBottom: 5 }}>Category</h3>
         {Categories.map((cat, i) => (
-          <div>
+          <div key={i}>
             <input
               type={"checkbox"}
               id={cat.id}
